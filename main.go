@@ -1,35 +1,14 @@
 package main
 
-import (
-	"encoding/json"
-	"log"
-	"net/http"
-)
+import "github.com/gin-gonic/gin"
 
 func main() {
+	r := gin.Default()
+	r.GET("/demo", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "Hello World",
+		})
+	})
+	r.Run(":8080")
 
-	http.HandleFunc("/demo", demoHandler)
-
-	log.Println("Hello, World!")
-	err := http.ListenAndServe(":8080", nil) // localhost:8080
-	if err != nil {
-		log.Fatal("Server failed to start: ", err)
-	}
-}
-
-func demoHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("%+v", r)
-
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	response := map[string]string{
-		"message": "Hello, World!",
-		"info":    "Tobyblgo",
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
 }
