@@ -1,39 +1,25 @@
 package main
 
 import (
+	v1handler "tobygin.com/learn-gin/internal/api/v1/handler"
+
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	r := gin.Default()
-	r.GET("/demo", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Hello World",
-		})
-	})
-
-	r.GET("/users", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"users": []string{"Alice", "Bob", "Charlie"},
-		})
-	})
-
-	r.GET("/user/:user_id", func(c *gin.Context) {
-		user_id := c.Param("user_id")
-		name_query := c.Query("name")
-		c.JSON(200, gin.H{
-			"data":    "Thoong tin user",
-			"user_id": user_id,
-			"name":    name_query,
-		})
-	})
-
-	r.GET("/products", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"products": "Danh sach san pham",
-		})
-	})
+	userHandle := v1handler.NewUserHandler()
+	v1 := r.Group("/api/v1")
+	{
+		user := v1.Group("/user")
+		{
+			user.GET("", userHandle.GetUsersV1)
+			user.GET("/:user_id", userHandle.GetUserV1)
+			user.POST("", userHandle.CreateUserV1)
+			user.PUT("/:user_id", userHandle.UpdateUserV1)
+			user.DELETE("/:user_id", userHandle.DeleteUserV1)
+		}
+	}
 
 	r.Run(":8080")
-
 }
