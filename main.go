@@ -8,16 +8,27 @@ import (
 
 func main() {
 	r := gin.Default()
-	userHandle := v1handler.NewUserHandler()
+
 	v1 := r.Group("/api/v1")
 	{
 		user := v1.Group("/user")
 		{
+			userHandle := v1handler.NewUserHandler()
+
 			user.GET("", userHandle.GetUsersV1)
-			user.GET("/:user_id", userHandle.GetUserV1)
+			user.GET("/:id", userHandle.GetUserV1)
+			user.GET("/admin/:uuid", userHandle.GetUserByUUIDV1)
+			// user.GET("/admin/:slug", userHandle.GetUserBySlugV1)
 			user.POST("", userHandle.CreateUserV1)
-			user.PUT("/:user_id", userHandle.UpdateUserV1)
-			user.DELETE("/:user_id", userHandle.DeleteUserV1)
+			user.PUT("/:id", userHandle.UpdateUserV1)
+			user.DELETE("/:id", userHandle.DeleteUserV1)
+		}
+
+		category := v1.Group("/category")
+		{
+			categoryHandle := v1handler.NewCategoryHandler()
+
+			category.GET(":category", categoryHandle.GetCategoryByCategoriesV1)
 		}
 	}
 
