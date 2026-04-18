@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+	"tobygin.com/learn-gin/utils"
 )
 
 type UserHandler struct {
@@ -20,23 +20,24 @@ var searchRegex = regexp.MustCompile(`^[a-zA-Z0-9\s]+$`)
 
 func (u *UserHandler) GetUsersV1(ctx *gin.Context) {
 	search := ctx.Query("search")
-	if search == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "Search query cannot be empty",
+
+	if erro := utils.VaildationRequired("search", search); erro != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{
+			"error": erro.Error(),
 		})
 		return
 	}
 
-	if len(search) < 3 || len(search) > 50 {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "Search query must be between 3 and 50 characters long",
+	if erro := utils.ValidationStringLength("search", search, 3, 50); erro != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{
+			"error": erro.Error(),
 		})
 		return
 	}
 
-	if !searchRegex.MatchString(search) {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "Search query can only contain letters, numbers, and spaces",
+	if erro := utils.ValidationRegex("search", search, searchRegex, "Search query can only contain letters, numbers, and spaces"); erro != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{
+			"error": erro.Error(),
 		})
 		return
 	}
@@ -52,22 +53,17 @@ func (u *UserHandler) GetUsersV1(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Run ok",
+		"search":  search,
 	})
 }
 
 func (u *UserHandler) GetUserV1(ctx *gin.Context) {
 	idStr := ctx.Param("id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid user ID",
-		})
-		return
-	}
 
-	if id <= 0 {
+	id, erro := utils.ValidationPositiveInt("ID", idStr)
+	if erro != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "User ID must be greater than 0",
+			"error": erro.Error(),
 		})
 		return
 	}
@@ -82,17 +78,17 @@ func (u *UserHandler) GetUserV1(ctx *gin.Context) {
 func (u *UserHandler) GetUserByUUIDV1(ctx *gin.Context) {
 	idStr := ctx.Param("uuid")
 
-	_, err := uuid.Parse(idStr)
-	if err != nil {
+	uid, erro := utils.ValidationUUID("UUID", idStr)
+	if erro != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid UUID",
+			"error": erro.Error(),
 		})
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Run ok",
-		"uuid":    idStr,
+		"uuid":    uid,
 	})
 }
 
@@ -110,9 +106,9 @@ func (u *UserHandler) GetUserBySlugV1(ctx *gin.Context) {
 		return
 	}
 
-	if !slugRegexCompiled.MatchString(slug) {
+	if erro := utils.ValidationRegex("slug", slug, slugRegexCompiled, "Slug must be lowercase letters, numbers, and hyphens only"); erro != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid slug format",
+			"error": erro.Error(),
 		})
 		return
 	}

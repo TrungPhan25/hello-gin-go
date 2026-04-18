@@ -18,7 +18,7 @@ func main() {
 			user.GET("", userHandle.GetUsersV1)
 			user.GET("/:id", userHandle.GetUserV1)
 			user.GET("/admin/:uuid", userHandle.GetUserByUUIDV1)
-			// user.GET("/admin/:slug", userHandle.GetUserBySlugV1)
+			user.GET("/admin/slug/:slug", userHandle.GetUserBySlugV1)
 			user.POST("", userHandle.CreateUserV1)
 			user.PUT("/:id", userHandle.UpdateUserV1)
 			user.DELETE("/:id", userHandle.DeleteUserV1)
