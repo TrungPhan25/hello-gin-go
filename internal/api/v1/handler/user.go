@@ -92,8 +92,10 @@ func (u *UserHandler) GetUserByUUIDV1(ctx *gin.Context) {
 	})
 }
 
-var slugRegex = `^[a-z0-9]+(?:-[a-z0-9]+)*$`
-var slugRegexCompiled = regexp.MustCompile(slugRegex)
+var (
+	slugRegex         = `^[a-z0-9]+(?:-[a-z0-9]+)*$`
+	slugRegexCompiled = regexp.MustCompile(slugRegex)
+)
 
 // Slug
 func (u *UserHandler) GetUserBySlugV1(ctx *gin.Context) {
