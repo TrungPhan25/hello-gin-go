@@ -61,3 +61,20 @@ func (u *UserHandler) DeleteUserV1(ctx *gin.Context) {
 		"user_id": userID,
 	})
 }
+
+type GetuserByUUIDRequest struct {
+	UUID string `uri:"uuid" binding:"uuid"`
+}
+
+func (u *UserHandler) GetUserByUUIDV1(ctx *gin.Context) {
+	var param GetuserByUUIDRequest
+	if err := ctx.ShouldBindUri(&param); err != nil {
+		ctx.JSON(http.StatusBadRequest, utils.HandleValidationError(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Run ok",
+		"uuid":    param.UUID,
+	})
+}

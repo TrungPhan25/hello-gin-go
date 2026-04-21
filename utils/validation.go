@@ -12,6 +12,8 @@ func HandleValidationError(err error) gin.H {
 			switch e.Tag() {
 			case "gt":
 				errors[e.Field()] = e.Field() + " phải lớn hơn " + e.Param()
+			case "uuid":
+				errors[e.Field()] = e.Field() + " phải là một UUID hợp lệ"
 			}
 		}
 
@@ -20,6 +22,6 @@ func HandleValidationError(err error) gin.H {
 		}
 	}
 	return gin.H{
-		"message": "yêu cầu không hợp lệ " + err.Error(),
+		"message": "yêu cầu không hợp lệ",
 	}
 }
