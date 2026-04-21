@@ -2,12 +2,18 @@ package main
 
 import (
 	v1handler "tobygin.com/learn-gin/internal/api/v1/handler"
+	"tobygin.com/learn-gin/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	r := gin.Default()
+
+	if err := utils.RegisterValidation(); err != nil {
+		panic("Failed to register custom validation: " + err.Error())
+	}
+
 	v1 := r.Group("/api/v1")
 	{
 		user := v1.Group("/user")
