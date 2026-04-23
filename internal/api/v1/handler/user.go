@@ -14,12 +14,34 @@ func NewUserHandler() *UserHandler {
 	return &UserHandler{}
 }
 
+type ListUsersRequest struct {
+	Page    int    `json:"page" binding:"required,gte=1"`
+	Limit   int    `json:"limit" binding:"required,gt=1,lte=100"`
+	Sort    string `json:"sort" binding:"omitempty,oneof=asc desc"`
+	Search  string `json:"search" binding:"omitempty,max=100"`
+	Display bool   `json:"display" binding:"omitempty"`
+}
+
+// type ListUsersFormRequest struct {
+// 	Page   int    `form:"page" binding:"required,gte=1"`
+// 	Limit  int    `form:"limit" binding:"required,gte=1,lte=100"`
+// 	Sort   string `form:"sort" binding:"omitempty,oneof=asc desc"`
+// 	Search string `form:"search" binding:"omitempty,max=100"`
+// }
+
 func (u *UserHandler) GetUsersV1(ctx *gin.Context) {
-	limit := ctx.DefaultQuery("limit", "10")
+	var req ListUsersRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, utils.HandleValidationError(err))
+		return
+	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Run ok",
-		"limit":   limit,
+		"page":    req.Page,
+		// "limit":   req.Limit,
+		// "sort":    req.Sort,
+		// "search":  req.Search,
 	})
 }
 
@@ -40,7 +62,24 @@ func (u *UserHandler) GetUserV1(ctx *gin.Context) {
 	})
 }
 
+type PostUsersRequest struct {
+	Display *bool  `json:"display" binding:"omitempty"`
+	Name    string `json:"name" binding:"required,min=2,max=50"`
+	Address string `json:"address" binding:"required,min=2,max=200"`
+}
+
 func (u *UserHandler) CreateUserV1(ctx *gin.Context) {
+	var req PostUsersRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, utils.HandleValidationError(err))
+		return
+	}
+
+	if req.Display != nil {
+		defaultDisplay := false
+		req.Display = &defaultDisplay
+	}
+
 	ctx.JSON(http.StatusCreated, gin.H{
 		"message": "Create user ok",
 	})

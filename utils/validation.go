@@ -20,16 +20,18 @@ func HandleValidationError(err error) gin.H {
 				errors[e.Field()] = e.Field() + " phải là một UUID hợp lệ"
 			case "slug":
 				errors[e.Field()] = e.Field() + " phải là một slug hợp lệ chỉ chứa chữ thường, số và dấu gạch nối"
-			// case "min":
-			// 	errors[e.Field()] = e.Field() + " phải có độ dài tối thiểu là " + e.Param()
+			case "min":
+				errors[e.Field()] = e.Field() + " phải có độ dài tối thiểu là " + e.Param()
 			case "max":
 				errors[e.Field()] = e.Field() + " phải có độ dài tối đa là " + e.Param()
+			case "required":
+				errors[e.Field()] = e.Field() + " là bắt buộc"
 			}
 		}
 
 		return gin.H{
 			"errors":  "Yêu cầu không hợp lệ",
-			"details": validationErro.Error(),
+			"details": errors,
 		}
 	}
 	return gin.H{
