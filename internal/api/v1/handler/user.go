@@ -1,6 +1,7 @@
 package v1handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -30,6 +31,7 @@ type ListUsersRequest struct {
 // }
 
 func (u *UserHandler) GetUsersV1(ctx *gin.Context) {
+	log.Printf("check function get user")
 	var req ListUsersRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, utils.HandleValidationError(err))

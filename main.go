@@ -2,6 +2,7 @@ package main
 
 import (
 	v1handler "tobygin.com/learn-gin/internal/api/v1/handler"
+	"tobygin.com/learn-gin/middleware"
 	"tobygin.com/learn-gin/utils"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +14,8 @@ func main() {
 	if err := utils.RegisterValidation(); err != nil {
 		panic("Failed to register custom validation: " + err.Error())
 	}
+
+	r.Use(middleware.SimpleMiddleware())
 
 	v1 := r.Group("/api/v1")
 	{
