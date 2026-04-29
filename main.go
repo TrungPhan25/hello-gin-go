@@ -1,21 +1,28 @@
 package main
 
 import (
+	"log"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	v1handler "tobygin.com/learn-gin/internal/api/v1/handler"
 	"tobygin.com/learn-gin/middleware"
 	"tobygin.com/learn-gin/utils"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	r := gin.Default()
 
+	erro := godotenv.Load()
+	if erro != nil {
+		log.Printf("No find env file")
+	}
+
 	if err := utils.RegisterValidation(); err != nil {
 		panic("Failed to register custom validation: " + err.Error())
 	}
 
-	r.Use(middleware.SimpleMiddleware())
+	r.Use(middleware.APIKeyMiddleware())
 
 	v1 := r.Group("/api/v1")
 	{
@@ -40,5 +47,5 @@ func main() {
 		}
 	}
 
-	r.Run(":8080")
+	r.Run(":8081")
 }
