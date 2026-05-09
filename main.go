@@ -22,7 +22,10 @@ func main() {
 		panic("Failed to register custom validation: " + err.Error())
 	}
 
-	r.Use(middleware.APIKeyMiddleware())
+	// Chay song song CleanupClients de xoa nhung client khong con su dung sau 3 phut
+	go middleware.CleanupClients()
+
+	r.Use(middleware.APIKeyMiddleware(), middleware.RateLimitingMiddleware())
 
 	v1 := r.Group("/api/v1")
 	{
