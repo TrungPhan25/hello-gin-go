@@ -25,7 +25,7 @@ func main() {
 	// Chay song song CleanupClients de xoa nhung client khong con su dung sau 3 phut
 	go middleware.CleanupClients()
 
-	r.Use(middleware.APIKeyMiddleware(), middleware.RateLimitingMiddleware())
+	r.Use(middleware.LoggerMiddleware(), middleware.APIKeyMiddleware(), middleware.RateLimitingMiddleware())
 
 	v1 := r.Group("/api/v1")
 	{
