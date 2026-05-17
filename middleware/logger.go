@@ -3,32 +3,28 @@ package middleware
 import (
 	"bytes"
 	"io"
-	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/natefinch/lumberjack"
 	"github.com/rs/zerolog"
 )
 
 func LoggerMiddleware() gin.HandlerFunc {
 	logPath := "logs/http.log"
 
-	// create folder if not exist
-	if error := os.MkdirAll(filepath.Dir(logPath), os.ModePerm); error != nil {
-		panic(error)
-	}
-
-	// create log file if not exist, and open it for appending
-	logFile, error := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-	if error != nil {
-		panic(error)
-	}
-
-	logger := zerolog.New(logFile).With().Timestamp().Logger()
+	logger := zerolog.New(&lumberjack.Logger{
+		Filename:   logPath,
+		MaxSize:    1, // megabytes
+		MaxBackups: 5,
+		MaxAge:     5,    //days
+		Compress:   true, // disabled by default
+		LocalTime:  true,
+	}).With().Timestamp().Logger()
 
 	return func(c *gin.Context) {
 		start := time.Now()
+		// contentType := c.GetHeader("Content-Type")
 
 		// pull
 		bodyByte, err := io.ReadAll(c.Request.Body)
